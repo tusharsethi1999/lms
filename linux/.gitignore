@@ -1,0 +1,14 @@
+flutter/ephemeral
+
+# Build directories
+./android/app/build/
+
+# Flutter build outputs
+.dart_tool/
+
+# Pub cache
+.pub-cache/
+
+# Editor specific files
+.idea/
+.vscode/
