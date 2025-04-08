@@ -5,24 +5,55 @@ import 'package:lms/models/user.dart';
 const dummyUsername = 'sethit';
 const dummyPassword = 'password123';
 const dummyEmail = '$dummyUsername@rpi.edu';
-const dummyyRole = 'student';
+const dummyRole = 'student';
 
-// StateNotifier to handle login/logout logic
-class AuthNotifier extends StateNotifier<User?> {
-  AuthNotifier() : super(null);
+// Auth state model
+class AuthState {
+  final User? user;
+  final bool isLoading;
+  final String? errorMessage;
 
-  void login(String username, String password) {
-    if (username == dummyUsername && password == dummyPassword) {
-      state = User(username: username, role: dummyyRole, password: dummyPassword, email: dummyEmail);
+  const AuthState({this.user, this.isLoading = false, this.errorMessage});
+
+  bool get isAuthenticated => user != null;
+  bool get hasError => errorMessage != null;
+}
+
+// StateNotifier to handle auth logic
+class AuthNotifier extends StateNotifier<AuthState> {
+  AuthNotifier() : super(const AuthState());
+
+  Future<void> login(String username, String password) async {
+    try {
+      state = AuthState(isLoading: true, errorMessage: null);
+
+      // Simulate API call delay
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      if (username == dummyUsername && password == dummyPassword) {
+        state = AuthState(
+          user: User(
+            username: username,
+            role: dummyRole,
+            password: password,
+            email: dummyEmail,
+          ),
+          isLoading: false,
+        );
+      } else {
+        throw Exception('🔐 Invalid credentials! Please try again.');
+      }
+    } catch (e) {
+      state = AuthState(errorMessage: e.toString(), isLoading: false);
     }
   }
 
   void logout() {
-    state = null;
+    state = const AuthState();
   }
 }
 
-// Global provider for auth state
-final authProvider = StateNotifierProvider<AuthNotifier, User?>((ref) {
+// Auth provider
+final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier();
 });

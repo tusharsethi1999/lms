@@ -7,8 +7,8 @@ class SideBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       
-      color: Colors.red.withValues(
-        alpha: 100, // Adjust the alpha for transparency
+      color: Colors.black.withValues(
+        alpha: 50, // Adjust the alpha for transparency
       ),
       child: const Center(
         child: Text(

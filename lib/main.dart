@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animations/animations.dart';
-import 'package:lms/pages/login_page.dart';
 import 'package:lms/pages/home_page.dart';
-import 'providers/auth_provider.dart';
+import 'package:lms/pages/login_page.dart';
+import 'package:lms/providers/auth_provider.dart';
 
 void main() {
   runApp(const ProviderScope(child: LMSApp()));
@@ -14,7 +14,9 @@ class LMSApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider);
+    final authState = ref.watch(
+      authProvider,
+    ); // Changed to watch instead of read
 
     return MaterialApp(
       title: 'LMS App',
@@ -33,8 +35,10 @@ class LMSApp extends ConsumerWidget {
             child: child,
           );
         },
-        // child: user == null ? const LoginPage() : const HomePage(),
-        child: HomePage()
+        child:
+            authState.isAuthenticated
+                ? const HomePage(key: ValueKey('HomePage'))
+                : const LoginPage(key: ValueKey('LoginPage')),
       ),
     );
   }

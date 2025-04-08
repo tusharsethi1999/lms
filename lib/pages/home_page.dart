@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lms/pages/login_page.dart';
 import '../providers/auth_provider.dart';
 import 'package:lms/components/sidebar.dart';
 import 'package:lms/components/dashboard.dart';
@@ -9,7 +10,7 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final user = ref.watch(authProvider);
+    // final user = ref.read(authProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -19,6 +20,11 @@ class HomePage extends ConsumerWidget {
             icon: const Icon(Icons.logout),
             onPressed: () {
               ref.read(authProvider.notifier).logout();
+              // Optional: Add navigation back to login if needed
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => LoginPage()),
+              );
             },
           ),
         ],
