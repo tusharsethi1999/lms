@@ -39,6 +39,16 @@ class CoursesNotifier extends StateNotifier<List<Course>> {
           state[i]
     ];
   }
+
+  void updateAttendance(int index) {
+    state = [
+      for (int i = 0; i < state.length; i++)
+        if (i == index)
+          state[i].copyWith(attendance: state[i].attendance - 1)
+        else
+          state[i]
+    ];
+  }
 }
 
 final coursesProvider =

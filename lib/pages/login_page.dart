@@ -68,6 +68,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+    const infoColor = Colors.black;
 
     // Listen for authentication errors
     if (authState.hasError) {
@@ -91,7 +92,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
             child: Center(
               child: Opacity(
                 opacity: 0.1,
-                child: Icon(Icons.school, size: 300, color: Colors.white),
+                child: Icon(Icons.school, size: 300, color: infoColor),
               ),
             ),
           ),
@@ -156,7 +157,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                           const Icon(
                             Icons.school,
                             size: 48,
-                            color: Colors.white,
+                            color: infoColor,
                           ),
                           const SizedBox(height: 16),
                           const Text(
@@ -164,13 +165,13 @@ class _LoginPageState extends ConsumerState<LoginPage>
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: infoColor,
                             ),
                           ),
                           const SizedBox(height: 8),
                           const Text(
                             'Sign in to continue learning',
-                            style: TextStyle(color: Colors.white70),
+                            style: TextStyle(color: infoColor),
                           ),
                           const SizedBox(height: 32),
 
@@ -178,26 +179,26 @@ class _LoginPageState extends ConsumerState<LoginPage>
                           TextFormField(
                             controller: usernameController,
                             focusNode: _usernameFocus,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: infoColor),
                             decoration: InputDecoration(
                               labelText: 'Username',
                               labelStyle: const TextStyle(
-                                color: Colors.white70,
+                                color: infoColor,
                               ),
                               prefixIcon: const Icon(
                                 Icons.person,
-                                color: Colors.white70,
+                                color: infoColor,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: const BorderSide(
-                                  color: Colors.white70,
+                                  color: infoColor,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: const BorderSide(
-                                  color: Colors.white70,
+                                  color: infoColor,
                                 ),
                               ),
                               errorStyle: TextStyle(color: Colors.red.shade200),
@@ -221,27 +222,27 @@ class _LoginPageState extends ConsumerState<LoginPage>
                           TextFormField(
                             controller: passwordController,
                             focusNode: _passwordFocus,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: infoColor),
                             obscureText: true,
                             decoration: InputDecoration(
                               labelText: 'Password',
                               labelStyle: const TextStyle(
-                                color: Colors.white70,
+                                color: infoColor,
                               ),
                               prefixIcon: const Icon(
                                 Icons.lock,
-                                color: Colors.white70,
+                                color: infoColor,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: const BorderSide(
-                                  color: Colors.white70,
+                                  color: infoColor,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: const BorderSide(
-                                  color: Colors.white70,
+                                  color: infoColor,
                                 ),
                               ),
                               errorStyle: TextStyle(color: Colors.red.shade200),

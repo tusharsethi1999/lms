@@ -9,6 +9,7 @@ const dummyRole = 'student';
 
 // Auth state model
 class AuthState {
+  // final String id;
   final User? user;
   final bool isLoading;
   final String? errorMessage;
