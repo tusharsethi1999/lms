@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lms/models/course.dart';
+import 'package:lms/pages/course_details.dart';
 import 'package:lms/providers/course_provider.dart';
 
 class CourseCard extends StatelessWidget {
@@ -102,7 +103,17 @@ class CourseCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton(onPressed: () {}, child: const Text('View Details')),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CourseDetailsPage(course: course),
+                      ),
+                    );
+                  },
+                  child: const Text('View Details'),
+                ),
                 Row(
                   children: [
                     IconButton(

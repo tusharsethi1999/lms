@@ -4,8 +4,11 @@ import 'package:animations/animations.dart';
 import 'package:lms/pages/home_page.dart';
 import 'package:lms/pages/login_page.dart';
 import 'package:lms/providers/auth_provider.dart';
+// import 'package:logger/logger.dart';
 
-void main() {
+void main() async {
+  // Logger().d("Starting LMS App");
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: LMSApp()));
 }
 

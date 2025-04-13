@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lms/pages/login_page.dart';
+import 'package:lms/components/app_bar.dart';
+import 'package:lms/main.dart';
 import '../providers/auth_provider.dart';
 import 'package:lms/components/sidebar.dart';
 import 'package:lms/components/dashboard.dart';
@@ -8,26 +9,23 @@ import 'package:lms/components/dashboard.dart';
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
+  void _handleLogout(BuildContext context, WidgetRef ref) {
+    ref.read(authProvider.notifier).logout();
+    // Optional: Add navigation back to login if needed
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => LMSApp()),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final user = ref.read(authProvider);
+    final user = ref.read(authProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Learning Management System'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              ref.read(authProvider.notifier).logout();
-              // Optional: Add navigation back to login if needed
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => LoginPage()),
-              );
-            },
-          ),
-        ],
+      appBar: CustomAppBar(
+        title: 'Learning Management System',
+        onLogout: () => _handleLogout(context, ref),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -38,7 +36,10 @@ class HomePage extends ConsumerWidget {
           return Row(
             children: [
               SizedBox(width: screenWidth * 0.05),
-              SizedBox(width: leftWidth, child: const SideBar()),
+              SizedBox(
+                width: leftWidth,
+                child: NeumorphicSidebar(user: user.user!),
+              ),
               SizedBox(width: rightWidth, child: const Dashboard()),
             ],
           );

@@ -1,15 +1,10 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:lms/models/user.dart';
-
-// Simulated credentials
-const dummyUsername = 'sethit';
-const dummyPassword = 'password123';
-const dummyEmail = '$dummyUsername@rpi.edu';
-const dummyRole = 'student';
 
 // Auth state model
 class AuthState {
-  // final String id;
   final User? user;
   final bool isLoading;
   final String? errorMessage;
@@ -20,29 +15,51 @@ class AuthState {
   bool get hasError => errorMessage != null;
 }
 
-// StateNotifier to handle auth logic
+// StateNotifier to handle auth logic.
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(const AuthState());
+  // Persistent state for hot reload retention.
+  static AuthState persistentState = const AuthState();
 
+  AuthNotifier() : super(persistentState);
+
+  @override
+  set state(AuthState newState) {
+    persistentState = newState;
+    super.state = newState;
+  }
+
+  /// Logs in by calling the Deno backend.
   Future<void> login(String username, String password) async {
     try {
       state = AuthState(isLoading: true, errorMessage: null);
 
-      // Simulate API call delay
-      await Future.delayed(const Duration(milliseconds: 500));
+      // Replace 'localhost' with the appropriate IP/hostname if needed.
+      final uri = Uri.parse('http://localhost:8000/login');
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'username': username, 'password': password}),
+      );
 
-      if (username == dummyUsername && password == dummyPassword) {
-        state = AuthState(
-          user: User(
-            username: username,
-            role: dummyRole,
-            password: password,
-            email: dummyEmail,
-          ),
-          isLoading: false,
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Assuming the response structure is:
+        // { "message": "Login successful", "user": { ... } }
+        final userData = data['user'];
+        final user = User(
+          username: userData['username'],
+          email: userData['email'],
+          role: userData['role'],
+          major: userData['major'],
+          semester: userData['semester'],
+          profileImageUrl: userData['profileImageUrl'],
+          password: password, // Retain the password locally if needed.
         );
+        state = AuthState(user: user, isLoading: false);
       } else {
-        throw Exception('🔐 Invalid credentials! Please try again.');
+        // Parse error details if provided.
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['error'] ?? 'Invalid credentials');
       }
     } catch (e) {
       state = AuthState(errorMessage: e.toString(), isLoading: false);
@@ -54,7 +71,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 }
 
-// Auth provider
+// Auth provider for your app.
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier();
 });
