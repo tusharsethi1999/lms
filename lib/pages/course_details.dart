@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:lms/components/custom_circular_indicator.dart';
+import 'package:lms/components/attendance_pie_chart.dart';
 import 'package:lms/components/hover_animated_button.dart';
 import 'package:lms/models/course.dart';
 
@@ -51,12 +51,18 @@ class CourseDetailsPage extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     "Instructor: ${course.instructor}",
-                    style: GoogleFonts.roboto(fontSize: 18, color: Colors.white70),
+                    style: GoogleFonts.roboto(
+                      fontSize: 18,
+                      color: Colors.white70,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     "Schedule: ${course.schedule}",
-                    style: GoogleFonts.roboto(fontSize: 18, color: Colors.white70),
+                    style: GoogleFonts.roboto(
+                      fontSize: 18,
+                      color: Colors.white70,
+                    ),
                   ),
                 ],
               ),
@@ -73,12 +79,14 @@ class CourseDetailsPage extends StatelessWidget {
             ).animate().slideY(begin: 0.5, end: 0, duration: 600.ms),
             const SizedBox(height: 12),
             LinearProgressIndicator(
-              value: course.progress,
-              minHeight: 14,
-              backgroundColor: Colors.grey.shade800,
-              valueColor:
-                  const AlwaysStoppedAnimation<Color>(Colors.greenAccent),
-            ).animate()
+                  value: course.progress,
+                  minHeight: 14,
+                  backgroundColor: Colors.grey.shade800,
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    Colors.greenAccent,
+                  ),
+                )
+                .animate()
                 .fadeIn(duration: 600.ms)
                 .slideY(begin: 0.5, end: 0, duration: 600.ms),
             const SizedBox(height: 30),
@@ -91,27 +99,33 @@ class CourseDetailsPage extends StatelessWidget {
                 color: Colors.white,
               ),
             ).animate().slideY(begin: 0.5, end: 0, duration: 600.ms),
-            const SizedBox(height: 12),
+            const SizedBox(height: 40),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CustomCircularIndicator(percentage: course.attendancePercentage)
-                    .animate()
-                    .fadeIn(duration: 600.ms, curve: Curves.easeInOut),
-                const SizedBox(width: 24),
+                // Replaced CustomCircularIndicator with AttendancePieChart.
+                const SizedBox(width: 100),
+                AttendancePieChart(
+                  percentage: course.attendancePercentage,
+                ).animate().fadeIn(duration: 600.ms, curve: Curves.easeInOut),
+                const SizedBox(width: 40),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       "${course.attendance.toInt()} / ${course.totalAttendance.toInt()} classes attended",
                       style: GoogleFonts.roboto(
-                          fontSize: 18, color: Colors.white70),
+                        fontSize: 18,
+                        color: Colors.white70,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       "${course.attendancePercentage.toStringAsFixed(1)}%",
                       style: GoogleFonts.roboto(
-                          fontSize: 18, color: Colors.white70),
+                        fontSize: 18,
+                        color: Colors.white70,
+                      ),
                     ),
                   ],
                 ),
@@ -132,7 +146,9 @@ class CourseDetailsPage extends StatelessWidget {
                   },
                   fontSize: 20,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 40, vertical: 24),
+                    horizontal: 40,
+                    vertical: 24,
+                  ),
                 ),
                 HoverAnimatedButton(
                   icon: Icons.restart_alt,
@@ -144,11 +160,12 @@ class CourseDetailsPage extends StatelessWidget {
                   },
                   fontSize: 20,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 40, vertical: 24),
+                    horizontal: 40,
+                    vertical: 24,
+                  ),
                 ),
               ],
-            ).animate().fadeIn(
-                duration: 600.ms, curve: Curves.easeInOut),
+            ).animate().fadeIn(duration: 600.ms, curve: Curves.easeInOut),
             const SizedBox(height: 30),
             // Miss Class Button.
             Center(
@@ -162,9 +179,10 @@ class CourseDetailsPage extends StatelessWidget {
                 },
                 fontSize: 22,
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 48, vertical: 28),
-              ).animate().fadeIn(
-                  duration: 600.ms, curve: Curves.easeInOut),
+                  horizontal: 48,
+                  vertical: 28,
+                ),
+              ).animate().fadeIn(duration: 600.ms, curve: Curves.easeInOut),
             ),
           ],
         ),
