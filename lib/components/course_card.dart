@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lms/models/course.dart';
 import 'package:lms/pages/course_details.dart';
-import 'package:lms/providers/course_provider.dart';
 
 class CourseCard extends StatelessWidget {
   const CourseCard({
@@ -18,19 +17,20 @@ class CourseCard extends StatelessWidget {
   final Course course;
   final int index;
 
-  Color _getProgressColor(double value) {
-    if (value < 0.5) {
-      return Colors.red;
-    } else if (value < 0.7) {
-      return Color.lerp(Colors.redAccent, Colors.orangeAccent, value / 0.7)!;
-    } else if (value < 0.9) {
-      return Color.lerp(
-        Colors.orangeAccent,
-        Colors.lightGreen,
-        (value - 0.7) / 0.2,
-      )!;
-    } else {
-      return Colors.lightGreen;
+  Color _gradeColor(String grade) {
+    switch (grade) {
+      case 'A':
+        return Colors.green;
+      case 'B':
+        return Colors.yellow;
+      case 'C':
+        return Colors.orange;
+      case 'D':
+        return Colors.red;
+      case 'F':
+        return Colors.red.shade900;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -60,143 +60,49 @@ class CourseCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Progress
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // Grade Display
+            Row(
               children: [
                 Text(
-                  'Progress: ${(course.progress * 100).toInt()}%',
-                  style: const TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 6),
-                LinearProgressIndicator(
-                  value: course.progress,
-                  minHeight: 8,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ],
-            ),
-
-            // Progress
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Attendance: ${((course.attendance / course.totalAttendance) * 100).toInt()}%',
-                  style: const TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 6),
-                LinearProgressIndicator(
-                  color: _getProgressColor(
-                    course.attendance / course.totalAttendance,
+                  'Current Grade: ',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
                   ),
-                  value: course.attendance / course.totalAttendance,
-                  minHeight: 8,
-                  borderRadius: BorderRadius.circular(6),
+                ),
+                Chip(
+                  label: Text(
+                    course.grade,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  backgroundColor: _gradeColor(course.grade),
                 ),
               ],
             ),
 
             const SizedBox(height: 12),
 
-            // Buttons: View, Reset, Edit
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CourseDetailsPage(course: course),
-                      ),
-                    );
-                  },
-                  child: const Text('View Details'),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      tooltip: 'Reset Progress',
-                      icon: const Icon(Icons.restart_alt),
-                      onPressed: () {
-                        ref
-                            .read(coursesProvider.notifier)
-                            .updateProgress(index, 0.0);
-                      },
+            // Buttons: View Details
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CourseDetailsPage(courseId: course.courseId),
                     ),
-                    IconButton(
-                      tooltip: 'Edit Progress',
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        double tempProgress = course.progress;
-                        _showDialog(context, tempProgress);
-                      },
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        (course.attendance - 1).clamp(0.0, 180.0);
-                        ref
-                            .read(coursesProvider.notifier)
-                            .updateAttendance(index);
-                      },
-                      child: const Text('Miss Class'),
-                    ),
-                  ],
-                ),
-              ],
+                  );
+                },
+                child: const Text('View Details'),
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Future<dynamic> _showDialog(BuildContext context, double tempProgress) {
-    return showDialog(
-      context: context,
-      builder: (_) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Edit Progress'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${(tempProgress * 100).toInt()}%'),
-                  Slider(
-                    value: tempProgress,
-                    onChanged: (val) {
-                      setState(() {
-                        tempProgress = val;
-                      });
-                    },
-                    min: 0.0,
-                    max: 1.0,
-                    divisions: 20,
-                    label: '${(tempProgress * 100).toInt()}%',
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    ref
-                        .read(coursesProvider.notifier)
-                        .updateProgress(index, tempProgress);
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        );
-      },
     );
   }
 }

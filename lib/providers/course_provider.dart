@@ -1,57 +1,50 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../models/course.dart';
 
-class CoursesNotifier extends StateNotifier<List<Course>> {
-  CoursesNotifier()
-      : super([
-          Course(
-            title: 'CS601 - Advanced Distributed Systems',
-            instructor: 'Dr. Rajesh Verma',
-            schedule: 'Mon & Wed · 10:00 AM - 11:30 AM',
-            progress: 0.3,
-          ),
-          Course(
-            title: 'CS604 - Machine Learning',
-            instructor: 'Prof. Anjali Rao',
-            schedule: 'Tue & Thu · 2:00 PM - 3:30 PM',
-            progress: 0.6,
-          ),
-          Course(
-            title: 'CS610 - Human-Computer Interaction',
-            instructor: 'Dr. Meera Sharma',
-            schedule: 'Fri · 9:00 AM - 12:00 PM',
-            progress: 0.2,
-          ),
-          Course(
-            title: 'CS621 - Cloud Computing',
-            instructor: 'Dr. Vivek Patel',
-            schedule: 'Mon & Wed · 1:00 PM - 2:30 PM',
-            progress: 0.4,
-          ),
-        ]);
+const _baseUrl = 'https://localhost:3000';
 
-  void updateProgress(int index, double newProgress) {
-    state = [
-      for (int i = 0; i < state.length; i++)
-        if (i == index)
-          state[i].copyWith(progress: newProgress)
-        else
-          state[i]
-    ];
+class CoursesNotifier extends StateNotifier<List<Course>> {
+  CoursesNotifier() : super([]);
+
+  /// Fetch basic list of courses (without details)
+  Future<void> fetchCourses() async {
+    final response = await http.get(Uri.parse('$_baseUrl/courses'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      state = data.map((json) => Course.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load courses: ${response.statusCode}');
+    }
   }
 
-  void updateAttendance(int index) {
-    state = [
-      for (int i = 0; i < state.length; i++)
-        if (i == index)
-          state[i].copyWith(attendance: state[i].attendance - 1)
-        else
-          state[i]
-    ];
+  /// Fetch full details for a single course (includes grade breakdown & office hours)
+  Future<Course> fetchCourseDetail(String courseId) async {
+    final response = await http.get(Uri.parse('$_baseUrl/courses/$courseId'));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonMap = json.decode(response.body);
+      return Course.fromJson(jsonMap);
+    } else {
+      throw Exception('Failed to load course details: ${response.statusCode}');
+    }
   }
 }
 
-final coursesProvider =
-    StateNotifierProvider<CoursesNotifier, List<Course>>((ref) {
-  return CoursesNotifier();
+/// Provider for list of courses
+final coursesProvider = StateNotifierProvider<CoursesNotifier, List<Course>>((
+  ref,
+) {
+  final notifier = CoursesNotifier();
+  notifier.fetchCourses(); // Auto-fetch on init
+  return notifier;
+});
+
+/// Provider to get details for a specific course by ID
+final courseDetailProvider = FutureProvider.family<Course, String>((
+  ref,
+  courseId,
+) async {
+  final notifier = ref.read(coursesProvider.notifier);
+  return notifier.fetchCourseDetail(courseId);
 });

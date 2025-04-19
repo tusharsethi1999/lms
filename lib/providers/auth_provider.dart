@@ -47,6 +47,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         // { "message": "Login successful", "user": { ... } }
         final userData = data['user'];
         final user = User(
+          userId: userData['userId'],
           username: userData['username'],
           email: userData['email'],
           role: userData['role'],
