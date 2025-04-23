@@ -1,50 +1,71 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback onLogout;
+  static const double appBarHeight = 120;
 
   const CustomAppBar({super.key, required this.title, required this.onLogout});
 
-  // Set a higher preferred size for a more modern look
   @override
-  Size get preferredSize => const Size.fromHeight(150);
+  Size get preferredSize => const Size.fromHeight(appBarHeight);
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
+
     return Stack(
       children: [
-        // The background with custom clip path
+        // Translucent blurred background
         ClipPath(
           clipper: CustomAppBarClipper(),
-          child: Container(
-            height: preferredSize.height,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.deepPurpleAccent, Colors.indigo],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              height: preferredSize.height + topPadding,
+              padding: EdgeInsets.only(top: topPadding),
+              color: Colors.white.withValues(alpha: .25),
             ),
           ),
         ),
-        // Content of the AppBar (title and logout button)
+
         Positioned(
-          top: 50,
-          left: 20,
-          right: 20,
+          top: topPadding + 16,
+          left: 24,
+          right: 24,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                title,
-                style: GoogleFonts.lato(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              // University Logo
+              Image.asset(
+                'assets/rpi/rpi_logo.png',
+                height: 48,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(width: 12),
+
+              // Title
+              Expanded(
+                child: Text(
+                  title,
+                  style: GoogleFonts.lato(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    shadows: const [
+                      Shadow(
+                        color: Colors.black38,
+                        offset: Offset(1, 1),
+                        blurRadius: 2,
+                      ),
+                    ],
+                  ),
                 ),
               ),
+
+              // Logout icon
               IconButton(
                 icon: const Icon(Icons.logout, color: Colors.white),
                 onPressed: onLogout,
@@ -62,16 +83,13 @@ class CustomAppBarClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    // Start at top-left
-    path.lineTo(0, size.height - 50);
-    // A smooth curved edge at the bottom
+    path.lineTo(0, size.height - 30);
     path.quadraticBezierTo(
       size.width / 2,
       size.height,
       size.width,
-      size.height - 50,
+      size.height - 30,
     );
-    // Finish the path
     path.lineTo(size.width, 0);
     path.close();
     return path;

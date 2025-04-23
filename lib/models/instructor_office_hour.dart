@@ -2,20 +2,20 @@ import 'package:lms/models/schedule.dart';
 
 class InstructorOfficeHour {
   final String instructorId;
-  final String officeNumber;
-  final List<WeeklySchedule> availability;
+  final String location;
+  final List<WeeklySchedule> schedules;
 
   InstructorOfficeHour({
     required this.instructorId,
-    required this.officeNumber,
-    required this.availability,
+    required this.location,
+    required this.schedules,
   });
 
   factory InstructorOfficeHour.fromJson(Map<String, dynamic> json) {
     return InstructorOfficeHour(
       instructorId: json['instructorId'] as String,
-      officeNumber: json['officeNumber'] as String,
-      availability: (json['availability'] as List<dynamic>)
+      location: json['location'] as String,
+      schedules: (json['schedules'] as List<dynamic>)
           .map((e) => WeeklySchedule.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -23,7 +23,7 @@ class InstructorOfficeHour {
 
   Map<String, dynamic> toJson() => {
         'instructorId': instructorId,
-        'officeNumber': officeNumber,
-        'availability': availability.map((e) => e.toJson()).toList(),
+        'location': location,
+        'schedules': schedules.map((e) => e.toJson()).toList(),
       };
 }

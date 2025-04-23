@@ -47,13 +47,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
         // { "message": "Login successful", "user": { ... } }
         final userData = data['user'];
         final user = User(
-          userId: userData['userId'],
+          userId: userData['_id'],
+          name: userData['name'],
           username: userData['username'],
           email: userData['email'],
           role: userData['role'],
           major: userData['major'],
           semester: userData['semester'],
-          profileImageUrl: userData['profileImageUrl'],
+          profileImageUrl:
+              userData['profileImageUrl'] ??
+              'https://plus.unsplash.com/premium_vector-1744204734613-2add82333774?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c3RvY2slMjBndXl8ZW58MHx8MHx8fDA%3D',
           password: password, // Retain the password locally if needed.
         );
         state = AuthState(user: user, isLoading: false);

@@ -4,6 +4,7 @@ class AssignmentDetail {
   final String assignmentName;
   final double obtainedMarks;
   final double totalMarks;
+  final DateTime? dueDate;
 
   AssignmentDetail({
     required this.assignmentId,
@@ -11,6 +12,7 @@ class AssignmentDetail {
     required this.assignmentName,
     required this.obtainedMarks,
     required this.totalMarks,
+    this.dueDate,
   });
 
   factory AssignmentDetail.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,9 @@ class AssignmentDetail {
       assignmentName: json['assignmentName'] as String,
       obtainedMarks: (json['obtainedMarks'] as num).toDouble(),
       totalMarks: (json['totalMarks'] as num).toDouble(),
+      dueDate: json['dueDate'] != null
+          ? DateTime.parse(json['dueDate'] as String)
+          : null,
     );
   }
 
@@ -29,5 +34,6 @@ class AssignmentDetail {
         'assignmentName': assignmentName,
         'obtainedMarks': obtainedMarks,
         'totalMarks': totalMarks,
+        'dueDate': dueDate?.toIso8601String(),
       };
 }

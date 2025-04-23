@@ -17,7 +17,7 @@ class Dashboard extends ConsumerWidget {
         children: [
           const Text(
             '📚 My Courses – Spring 2025',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 20),
           ...List.generate(

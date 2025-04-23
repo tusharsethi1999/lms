@@ -1,23 +1,35 @@
 class User {
   final String userId;
   final String username;
+  final String name;
   final String email;
-  final String password;
+  final String? password;
   final String role; // Student, Instructor, Admin
-  final String major;
-  final String semester;
-  final String profileImageUrl;
+  final String? major;
+  final String? semester;
+  final String? profileImageUrl;
   final double? gpa;
 
   User({
     required this.userId,
+    required this.name,
     required this.username,
     required this.email,
-    required this.password,
+    this.password,
     required this.role,
-    required this.major,
-    required this.semester,
-    required this.profileImageUrl,
+    this.major,
+    this.semester,
+    this.profileImageUrl,
     this.gpa,
   });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      userId: json['id'].toString(),
+      name: json['name'] as String,
+      email: json['email'] as String,
+      role: json['role'] as String,
+      username: '',
+    );
+  }
 }

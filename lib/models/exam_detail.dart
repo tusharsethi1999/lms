@@ -4,6 +4,7 @@ class ExamDetail {
   final String examName;
   final double obtainedMarks;
   final double totalMarks;
+  final DateTime? date;
 
   ExamDetail({
     required this.examId,
@@ -11,6 +12,7 @@ class ExamDetail {
     required this.examName,
     required this.obtainedMarks,
     required this.totalMarks,
+    this.date,
   });
 
   factory ExamDetail.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class ExamDetail {
       examName: json['examName'] as String,
       obtainedMarks: (json['obtainedMarks'] as num).toDouble(),
       totalMarks: (json['totalMarks'] as num).toDouble(),
+      date: DateTime.parse(json['date'] as String),
     );
   }
 
@@ -29,5 +32,6 @@ class ExamDetail {
         'examName': examName,
         'obtainedMarks': obtainedMarks,
         'totalMarks': totalMarks,
+        'date': date?.toIso8601String(),
       };
 }
