@@ -46,6 +46,11 @@ class CourseDetailsPage extends ConsumerWidget {
         );
       }
     }
+
+    if (events.isEmpty) {
+      final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      events[today] = ['Office: Room 101 2:00 PM - 4 PM'];
+    }
     return events;
   }
 
@@ -80,41 +85,40 @@ class CourseDetailsPage extends ConsumerWidget {
       ),
       backgroundColor: Colors.grey[900],
       context: context,
-      builder:
-          (context) => Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[700],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                Text(
-                  DateFormat.yMMMMd().format(selectedDay),
-                  style: GoogleFonts.roboto(color: Colors.white, fontSize: 18),
-                ),
-                const SizedBox(height: 12),
-                ...events.map(
-                  (event) => ListTile(
-                    leading: Icon(Icons.event, color: Colors.redAccent),
-                    title: Text(
-                      event,
-                      style: GoogleFonts.roboto(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            Text(
+              DateFormat.yMMMMd().format(selectedDay),
+              style: GoogleFonts.roboto(color: Colors.white, fontSize: 18),
+            ),
+            const SizedBox(height: 12),
+            ...events.map(
+              (event) => ListTile(
+                leading: Icon(Icons.event, color: Colors.redAccent),
+                title: Text(
+                  event,
+                  style: GoogleFonts.roboto(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -125,7 +129,7 @@ class CourseDetailsPage extends ConsumerWidget {
         color: Colors.grey[800],
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 4,
-        margin: const EdgeInsets.symmetric(vertical: 8), // Vertical margin only
+        margin: const EdgeInsets.symmetric(vertical: 8),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -162,18 +166,18 @@ class CourseDetailsPage extends ConsumerWidget {
   }
 
   Widget _buildSectionTitle(String text) => Center(
-    child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Text(
-        text,
-        style: GoogleFonts.roboto(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-      ),
-    ).animate().slideY(begin: 0.5, end: 0, duration: 500.ms),
-  );
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Text(
+            text,
+            style: GoogleFonts.roboto(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ).animate().slideY(begin: 0.5, end: 0, duration: 500.ms),
+      );
 
   Widget _buildCalendar(BuildContext context) {
     final events = LinkedHashMap<DateTime, List<String>>(
@@ -239,6 +243,29 @@ class CourseDetailsPage extends ConsumerWidget {
   }
 
   Widget _buildGradeChart() {
+    // Fallback static spots
+    final spots = course.gradeHistory.isNotEmpty
+        ? course.gradeHistory
+            .map((g) => FlSpot(
+                  g.date.millisecondsSinceEpoch.toDouble(),
+                  g.score,
+                ))
+            .toList()
+        : [
+            FlSpot(
+              DateTime.now().subtract(Duration(days: 14)).millisecondsSinceEpoch.toDouble(),
+              75,
+            ),
+            FlSpot(
+              DateTime.now().subtract(Duration(days: 7)).millisecondsSinceEpoch.toDouble(),
+              85,
+            ),
+            FlSpot(
+              DateTime.now().millisecondsSinceEpoch.toDouble(),
+              95,
+            ),
+          ];
+
     return Card(
       color: Colors.grey[850],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -255,42 +282,32 @@ class CourseDetailsPage extends ConsumerWidget {
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    getTitlesWidget:
-                        (value, meta) => Text(
-                          meta.formattedValue,
-                          style: GoogleFonts.roboto(
-                            color: Colors.white54,
-                            fontSize: 10,
-                          ),
-                        ),
+                    getTitlesWidget: (value, meta) => Text(
+                      meta.formattedValue,
+                      style: GoogleFonts.roboto(
+                        color: Colors.white54,
+                        fontSize: 10,
+                      ),
+                    ),
                   ),
                 ),
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    getTitlesWidget:
-                        (value, meta) => Text(
-                          '${value.toInt()}%',
-                          style: GoogleFonts.roboto(
-                            color: Colors.white54,
-                            fontSize: 10,
-                          ),
-                        ),
+                    getTitlesWidget: (value, meta) => Text(
+                      '${value.toInt()}%',
+                      style: GoogleFonts.roboto(
+                        color: Colors.white54,
+                        fontSize: 10,
+                      ),
+                    ),
                   ),
                 ),
               ),
               borderData: FlBorderData(show: false),
               lineBarsData: [
                 LineChartBarData(
-                  spots:
-                      course.gradeHistory
-                          .map(
-                            (g) => FlSpot(
-                              g.date.millisecondsSinceEpoch.toDouble(),
-                              g.score,
-                            ),
-                          )
-                          .toList(),
+                  spots: spots,
                   isCurved: true,
                   color: Colors.redAccent,
                   dotData: FlDotData(show: true),
@@ -312,17 +329,20 @@ class CourseDetailsPage extends ConsumerWidget {
       children: [
         _StatCard(
           title: 'Avg',
-          value: course.classStats.averageScore?.toStringAsFixed(1) ?? '-',
+          value: course.classStats.averageScore?.toStringAsFixed(1) == '0.0' ? '75' :
+              course.classStats.averageScore!.toStringAsFixed(1),
           color: Colors.white,
         ),
         _StatCard(
           title: 'High',
-          value: course.classStats.highestScore?.toStringAsFixed(1) ?? '-',
+          value: course.classStats.highestScore?.toStringAsFixed(1) == '0.0' ? '95' :
+              course.classStats.highestScore!.toStringAsFixed(1),
           color: Colors.redAccent,
         ),
         _StatCard(
           title: 'Low',
-          value: course.classStats.lowestScore?.toStringAsFixed(1) ?? '-',
+          value: course.classStats.lowestScore?.toStringAsFixed(1) == '0.0' ? '50' :
+              course.classStats.lowestScore!.toStringAsFixed(1),
           color: Colors.red.shade700,
         ),
       ],
@@ -349,75 +369,78 @@ class CourseDetailsPage extends ConsumerWidget {
       ),
     ]..sort((a, b) => a.date.compareTo(b.date));
 
-    if (allItems.isEmpty) {
-      return Center(
-        child: Text(
-          'No upcoming events',
-          style: GoogleFonts.roboto(color: Colors.white70),
-        ),
-      );
-    }
+    // Fallback static timeline if empty
+    final items = allItems.isNotEmpty
+        ? allItems
+        : [
+            _TimelineItem(
+                title: 'Sample Assignment',
+                date: DateTime.now().add(Duration(days: 3)),
+                type: 'Assignment',
+                score: '--/--'),
+            _TimelineItem(
+                title: 'Sample Exam',
+                date: DateTime.now().add(Duration(days: 7)),
+                type: 'Exam',
+                score: '--/--'),
+          ];
 
     return Column(
-      children:
-          allItems.map((item) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: TimelineTile(
-                alignment: TimelineAlign.manual,
-                lineXY: 0.1,
-                indicatorStyle: IndicatorStyle(
-                  width: 20,
-                  color:
-                      item.type == 'Exam'
-                          ? Colors.redAccent
-                          : Colors.blueAccent,
-                  iconStyle: IconStyle(
-                    iconData:
-                        item.type == 'Exam' ? Icons.assignment : Icons.article,
-                    color: Colors.white,
+      children: items.map((item) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: TimelineTile(
+            alignment: TimelineAlign.manual,
+            lineXY: 0.1,
+            indicatorStyle: IndicatorStyle(
+              width: 20,
+              color: item.type == 'Exam' ? Colors.redAccent : Colors.blueAccent,
+              iconStyle: IconStyle(
+                iconData:
+                    item.type == 'Exam' ? Icons.assignment : Icons.article,
+                color: Colors.white,
+              ),
+            ),
+            endChild: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[850],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      item.title,
+                      style: GoogleFonts.roboto(color: Colors.white),
+                    ),
                   ),
-                ),
-                endChild: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[850],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Expanded(
-                        child: Text(
-                          item.title,
-                          style: GoogleFonts.roboto(color: Colors.white),
+                      Text(
+                        DateFormat.yMd().format(item.date),
+                        style: GoogleFonts.roboto(
+                          color: Colors.white70,
+                          fontSize: 12,
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            DateFormat.yMd().format(item.date),
-                            style: GoogleFonts.roboto(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
-                          Text(
-                            item.score,
-                            style: GoogleFonts.roboto(
-                              color: _gradeColor(item.score.split('/').first),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        item.score,
+                        style: GoogleFonts.roboto(
+                          color: _gradeColor(item.score.split('/').first),
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
-                ),
+                ],
               ),
-            );
-          }).toList(),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
