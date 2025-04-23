@@ -26,7 +26,6 @@ class Course {
   final List<GradeHistory> gradeHistory;
   final ClassStats classStats;
 
-
   Course({
     required this.id,
     required this.courseId,
@@ -39,7 +38,7 @@ class Course {
     this.assignmentDetails = const [],
     this.officeHours = const [],
     this.gradeHistory = const [],
-    this.classStats  = const ClassStats(
+    this.classStats = const ClassStats(
       averageScore: 0.0,
       highestScore: 0.0,
       lowestScore: 0.0,
@@ -91,16 +90,42 @@ class Course {
     'assignmentDetails': assignmentDetails.map((a) => a.toJson()).toList(),
     'officeHours': officeHours.map((oh) => oh.toJson()).toList(),
   };
-}
 
+  Course copyWith({
+    String? id,
+    String? courseId,
+    String? title,
+    String? schedule,
+    User? instructor,
+    String? grade,
+    String? gradeId,
+    List<ExamDetail>? examDetails,
+    List<AssignmentDetail>? assignmentDetails,
+    List<InstructorOfficeHour>? officeHours,
+    List<GradeHistory>? gradeHistory,
+    ClassStats? classStats,
+  }) {
+    return Course(
+      id: id ?? this.id,
+      courseId: courseId ?? this.courseId,
+      title: title ?? this.title,
+      schedule: schedule ?? this.schedule,
+      instructor: instructor ?? this.instructor,
+      grade: grade ?? this.grade,
+      gradeId: gradeId ?? this.gradeId,
+      examDetails: examDetails ?? this.examDetails,
+      assignmentDetails: assignmentDetails ?? this.assignmentDetails,
+      officeHours: officeHours ?? this.officeHours,
+      gradeHistory: gradeHistory ?? this.gradeHistory,
+      classStats: classStats ?? this.classStats,
+    );
+  }
+}
 
 class GradeHistory {
   final DateTime date;
   final double score;
-  GradeHistory({
-    required this.date,
-    required this.score,
-  });
+  GradeHistory({required this.date, required this.score});
   factory GradeHistory.fromJson(Map<String, dynamic> json) {
     return GradeHistory(
       date: DateTime.parse(json['date'] as String),
@@ -117,11 +142,7 @@ class ClassStats {
   final double? averageScore;
   final double? highestScore;
   final double? lowestScore;
-  const ClassStats({
-    this.averageScore,
-    this.highestScore,
-    this.lowestScore,
-  });
+  const ClassStats({this.averageScore, this.highestScore, this.lowestScore});
   factory ClassStats.fromJson(Map<String, dynamic> json) {
     return ClassStats(
       averageScore: (json['averageScore'] as num?)?.toDouble(),
