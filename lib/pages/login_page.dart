@@ -72,7 +72,10 @@ class _LoginPageState extends ConsumerState<LoginPage>
         children: [
           // Blurred campus background
           Positioned.fill(
-            child: Image.asset('assets/rpi/rpi_wallpaper.jpeg', fit: BoxFit.cover),
+            child: Image.asset(
+              'assets/rpi/rpi_wallpaper.jpeg',
+              fit: BoxFit.cover,
+            ),
           ),
           Positioned.fill(
             child: BackdropFilter(
@@ -103,40 +106,29 @@ class _LoginPageState extends ConsumerState<LoginPage>
                         const SizedBox(height: 24),
 
                         // Error message
-                        if (authState.hasError) ...[
-                          SlideTransition(
-                            position: _slideAnimation,
-                            child: FadeTransition(
-                              opacity: _fadeAnimation,
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.red.shade50,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Text(
-                                      '🚨',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        'Oops! ${authState.errorMessage}',
-                                        style: TextStyle(
-                                          color: Colors.red.shade800,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                        // if (authState.hasError) ...[
+                        //   SlideTransition(
+                        //     position: _slideAnimation,
+                        //     child: FadeTransition(
+                        //       opacity: _fadeAnimation,
+                        //       child: _buildErrorBox(authState: authState),
+                        //     ),
+                        //   ),
+                        //   const SizedBox(height: 20),
+                        // ],
+                        if (authState.hasError)
+                          AnimatedSlide(
+                            offset: Offset.zero,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.fastOutSlowIn,
+                            child: AnimatedOpacity(
+                              opacity: 1,
+                              duration: const Duration(milliseconds: 500),
+                              child: _buildErrorBox(authState: authState),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
+                          )
+                        else
+                          SizedBox.shrink(),
 
                         // Header
                         Text(
@@ -156,7 +148,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                           controller: usernameController,
                           focusNode: _usernameFocus,
                           decoration: InputDecoration(
-                            labelText: 'Username or Email',
+                            labelText: 'Username',
                             prefixIcon: const Icon(Icons.person),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -220,7 +212,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                                       ),
                                     )
                                     : const Text(
-                                      'CONTINUE',
+                                      'SIGN IN',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
@@ -233,6 +225,36 @@ class _LoginPageState extends ConsumerState<LoginPage>
                   ),
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ignore: camel_case_types
+class _buildErrorBox extends StatelessWidget {
+  const _buildErrorBox({required this.authState});
+
+  final AuthState authState;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.red[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          const Text('🚨', style: TextStyle(fontSize: 20)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Oops! ${authState.errorMessage}',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
             ),
           ),
         ],

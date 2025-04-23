@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lms/components/course_card.dart';
+import 'package:lms/models/user.dart';
 import '../providers/course_provider.dart';
 
 class Dashboard extends ConsumerWidget {
-  const Dashboard({super.key});
+  final User user;
+  const Dashboard({super.key, required this.user});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,12 +19,22 @@ class Dashboard extends ConsumerWidget {
         children: [
           const Text(
             '📚 My Courses – Spring 2025',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 20),
           ...List.generate(
             courses.length,
-            (index) => CourseCard(context: context, ref: ref, course: courses[index], index: index),
+            (index) => CourseCard(
+              context: context,
+              ref: ref,
+              course: courses[index],
+              index: index,
+              user: user,
+            ),
           ),
         ],
       ),

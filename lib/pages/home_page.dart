@@ -69,7 +69,7 @@ class HomePage extends ConsumerWidget {
                       width: leftWidth,
                       child: NeumorphicSidebar(user: user.user!),
                     ),
-                    SizedBox(width: rightWidth, child: const Dashboard()),
+                    SizedBox(width: rightWidth, child: Dashboard(user: user.user!)),
                   ],
                 );
               },
